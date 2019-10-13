@@ -1,8 +1,12 @@
 #include "includes.h"
 #include "chess.h"
-#include "user_interface.h"
 
 
+void Chess::lava()
+{
+  printf("molten lava");
+}
+/*
 // -------------------------------------------------------------------
 // Chess class
 // -------------------------------------------------------------------
@@ -83,7 +87,7 @@ std::string Chess::describePiece(char chPiece)
       return description;
    }
 
- 
+
 // -------------------------------------------------------------------
 // Game class
 // -------------------------------------------------------------------
@@ -145,7 +149,7 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
 
       // Set Undo structure. If a piece was captured, then no "en passant" move performed
       m_undo.bCapturedLastMove = true;
-      
+
       // Reset m_undo.castling
       memset( &m_undo.en_passant, 0, sizeof( Chess::EnPassant ));
    }
@@ -174,7 +178,7 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
    else
    {
       m_undo.bCapturedLastMove   = false;
-      
+
       // Reset m_undo.castling
       memset( &m_undo.en_passant, 0, sizeof( Chess::EnPassant ));
    }
@@ -196,7 +200,7 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
 
       // Reset m_undo.promotion
       memset( &m_undo.promotion, 0, sizeof( Chess::Promotion ));
-   }  
+   }
 
    // Was it a castling move?
    if ( S_castling->bApplied == true  )
@@ -873,7 +877,7 @@ bool Game::isReachable( int iRow, int iColumn, int iColor )
          }
          else if ( (toupper(chPieceFound)       == 'P' )         &&
                    (getPieceColor(chPieceFound) == BLACK_PIECE ) &&
-                   ( i  == iRow + 1 )                            )  
+                   ( i  == iRow + 1 )                            )
          {
             // There is a pawn one square up, so the square is reachable
             bReachable = true;
@@ -910,7 +914,7 @@ bool Game::isReachable( int iRow, int iColumn, int iColor )
          }
          else if ( (toupper(chPieceFound)       == 'P' )         &&
                    (getPieceColor(chPieceFound) == WHITE_PIECE ) &&
-                   ( i  == iRow - 1 )                            )  
+                   ( i  == iRow - 1 )                            )
          {
             // There is a pawn one square down, so the square is reachable
             bReachable = true;
@@ -1122,7 +1126,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = startingPos.iColumn + 1; i < finishingPos.iColumn; i++)
             {
                if (isSquareOccupied(startingPos.iRow, i))
@@ -1138,7 +1142,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = startingPos.iColumn - 1; i > finishingPos.iColumn; i--)
             {
                if (isSquareOccupied(startingPos.iRow, i))
@@ -1166,7 +1170,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = startingPos.iRow + 1; i < finishingPos.iRow; i++)
             {
                if ( isSquareOccupied(i, startingPos.iColumn) )
@@ -1182,7 +1186,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = startingPos.iRow - 1; i > finishingPos.iRow; i--)
             {
                if ( isSquareOccupied(i, startingPos.iColumn) )
@@ -1218,7 +1222,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = 1; i < abs(finishingPos.iRow - startingPos.iRow); i++)
             {
                if (isSquareOccupied(startingPos.iRow+i, startingPos.iColumn-i))
@@ -1234,7 +1238,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = 1; i < abs(finishingPos.iRow - startingPos.iRow); i++)
             {
                if (isSquareOccupied(startingPos.iRow - i, startingPos.iColumn + i))
@@ -1250,7 +1254,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          {
             // Settting bFree as initially true, only inside the cases, guarantees that the path is checked
             bFree = true;
-            
+
             for (int i = 1; i < abs(finishingPos.iRow - startingPos.iRow); i++)
             {
                if (isSquareOccupied(startingPos.iRow - i, startingPos.iColumn - i))
@@ -1275,7 +1279,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
 bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirection)
 {
    bool bBlocked = false;
-   
+
    Chess::UnderAttack blocker = {0};
 
    switch(iDirection)
@@ -1462,7 +1466,7 @@ bool Game::isCheckMate()
       intended_move.to.iColumn   = iColumnToTest;
 
       // Now, for every possible move of the king, check if it would be in jeopardy
-      // Since the move has already been made, current_game->getCurrentTurn() now will return 
+      // Since the move has already been made, current_game->getCurrentTurn() now will return
       // the next player's color. And it is in fact this king that we want to check for jeopardy
       Chess::UnderAttack king_moved = isUnderAttack( iRowToTest, iColumnToTest, getCurrentTurn(), &intended_move );
 
@@ -1473,7 +1477,7 @@ bool Game::isCheckMate()
       }
    }
 
-   // 3. Can the attacker be taken or another piece get into the way? 
+   // 3. Can the attacker be taken or another piece get into the way?
    Chess::UnderAttack king_attacked = isUnderAttack( king.iRow, king.iColumn, getCurrentTurn() );
    if ( 1 == king_attacked.iNumAttackers )
    {
@@ -1559,7 +1563,7 @@ bool Game::isKingInCheck(int iColor, IntendedMove* pintended_move)
    bool bCheck = false;
 
    Position king = { 0 };
-   
+
    // Must check if the intended move is to move the king itself
    if ( nullptr != pintended_move && 'K' == toupper( pintended_move->chPiece) )
    {
@@ -1570,7 +1574,7 @@ bool Game::isKingInCheck(int iColor, IntendedMove* pintended_move)
    {
       king = findKing( iColor );
    }
-   
+
    UnderAttack king_attacked = isUnderAttack( king.iRow, king.iColumn, iColor, pintended_move );
 
    if ( true == king_attacked.bUnderAttack )
@@ -1688,7 +1692,7 @@ void Game::parseMove(string move, Position* pFrom, Position* pTo, char* chPromot
 void Game::logMove(std::string &to_record)
 {
    // If record contains only 5 chracters, add spaces
-   // Because when 
+   // Because when
    if ( to_record.length() == 5 )
    {
       to_record += "  ";
@@ -1744,7 +1748,7 @@ void Game::deleteLastMove( void )
    }
    else
    {
-      // Last move was black's, so let's 
+      // Last move was black's, so let's
       Round round = rounds[rounds.size() - 1];
       round.black_move = "";
 
@@ -1753,3 +1757,4 @@ void Game::deleteLastMove( void )
       rounds.push_back(round);
    }
 }
+*/

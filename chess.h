@@ -1,8 +1,11 @@
 #pragma once
-#include "includes.h"
+//#include "includes.h"
 
 class Chess
 {
+public:
+  void lava();
+  /*
 public:
    static int getPieceColor( char chPiece );
 
@@ -128,7 +131,7 @@ public:
 
    bool isSquareOccupied( int iRow, int iColumn );
 
-   bool isPathFree( Position startingPos, Position finishingPos, int iDirection ); 
+   bool isPathFree( Position startingPos, Position finishingPos, int iDirection );
 
    bool canBeBlocked( Position startingPos, Position finishinPos, int iDirection );
 
@@ -176,7 +179,7 @@ private:
 
    // Represent the pieces in the board
    char board[8][8];
- 
+
    // Undo is possible?
    struct Undo
    {
@@ -200,4 +203,5 @@ private:
 
    // Has the game finished already?
    bool m_bGameFinished;
+   */
 };
