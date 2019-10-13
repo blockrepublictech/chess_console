@@ -1,7 +1,21 @@
 #pragma once
-//#include "includes.h"
+#include "includes.h"
 
 #define EMPTY_SQUARE 0x20
+
+class IErrorReporter
+// The original (Windows Console App) code printed error messages and threw
+// exceptions. This is not compatible with EOS Smart Contracts. So the Smart
+// Contract or other program called this library must implement this class
+// to report error correctly when they occur
+{
+protected:
+  IErrorReporter() { };
+
+public:
+  virtual void ReportError(std::string) = 0;
+
+};
 
 class Chess
 {
@@ -107,7 +121,7 @@ public:
 class Game : Chess
 {
 public:
-   Game();
+   Game(IErrorReporter* reporter);
    ~Game();
 
    void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion );
@@ -202,4 +216,6 @@ private:
 
    // Has the game finished already?
    bool m_bGameFinished;
+
+   IErrorReporter* m_reporter;
 };

@@ -86,7 +86,7 @@ std::string Chess::describePiece(char chPiece)
 // -------------------------------------------------------------------
 // Game class
 // -------------------------------------------------------------------
-Game::Game()
+Game::Game(IErrorReporter* reporter)
 {
    // White player always starts
    m_CurrentTurn = WHITE_PLAYER;
@@ -111,6 +111,8 @@ Game::Game()
 
    m_bCastlingQueenSideAllowed[WHITE_PLAYER] = true;
    m_bCastlingQueenSideAllowed[BLACK_PLAYER] = true;
+
+   m_reporter = reporter;
 }
 
 Game::~Game()
@@ -1156,8 +1158,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iRow == finishingPos.iRow)
          {
-            printf("Error. Movement is vertical but row is the same\n");
-           //throw("Error. Movement is vertical but row is the same");
+            m_reporter->ReportError("Error. Movement is vertical but row is the same\n");
          }
 
          // Moving up
@@ -1262,7 +1263,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
 
          else
          {
-            //throw("Error. Diagonal move not allowed");
+            m_reporter->ReportError("Error. Diagonal move not allowed");
          }
       }
       break;
@@ -1322,8 +1323,7 @@ bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirect
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iRow == finishingPos.iRow)
          {
-            printf("Error. Movement is vertical but row is the same\n");
-           //throw("Error. Movement is vertical but row is the same");
+            m_reporter->ReportError("Error. Movement is vertical but row is the same\n");
          }
 
          // Moving up
@@ -1410,8 +1410,7 @@ bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirect
 
          else
          {
-            printf("Error. Diagonal move not allowed\n");
-            //throw("Error. Diagonal move not allowed");
+            m_reporter->ReportError("Error. Diagonal move not allowed\n");
          }
       }
       break;
@@ -1535,7 +1534,7 @@ bool Game::isCheckMate()
 
             default:
             {
-               //throw("!!!!Should not reach here. Invalid piece");
+               m_reporter->ReportError("!!!!Should not reach here. Invalid piece");
             }
             break;
          }
