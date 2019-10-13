@@ -2,11 +2,6 @@
 #include "chess.h"
 
 
-void Chess::lava()
-{
-  printf("molten lava");
-}
-/*
 // -------------------------------------------------------------------
 // Chess class
 // -------------------------------------------------------------------
@@ -258,7 +253,7 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
 
 void Game::undoLastMove()
 {
-   string last_move = getLastMove();
+   std::string last_move = getLastMove();
 
    // Parse the line
    Chess::Position from;
@@ -1118,7 +1113,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iColumn == finishingPos.iColumn)
          {
-            cout << "Error. Movement is horizontal but column is the same\n";
+            printf("Error. Movement is horizontal but column is the same\n");
          }
 
          // Moving to the right
@@ -1132,7 +1127,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow, i))
                {
                   bFree = false;
-                  cout << "Horizontal path to the right is not clear!\n";
+                  printf("Horizontal path to the right is not clear!\n");
                }
             }
          }
@@ -1148,7 +1143,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow, i))
                {
                   bFree = false;
-                  cout << "Horizontal path to the left is not clear!\n";
+                  printf("Horizontal path to the left is not clear!\n");
                }
             }
          }
@@ -1161,8 +1156,8 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iRow == finishingPos.iRow)
          {
-            cout << "Error. Movement is vertical but row is the same\n";
-           throw("Error. Movement is vertical but row is the same");
+            printf("Error. Movement is vertical but row is the same\n");
+           //throw("Error. Movement is vertical but row is the same");
          }
 
          // Moving up
@@ -1176,7 +1171,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if ( isSquareOccupied(i, startingPos.iColumn) )
                {
                   bFree = false;
-                  cout << "Vertical path up is not clear!\n";
+                  printf("Vertical path up is not clear!\n");
                }
             }
          }
@@ -1192,7 +1187,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if ( isSquareOccupied(i, startingPos.iColumn) )
                {
                   bFree = false;
-                  cout << "Vertical path down is not clear!\n";
+                  printf("Vertical path down is not clear!\n");
                }
             }
          }
@@ -1212,7 +1207,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow + i, startingPos.iColumn + i))
                {
                   bFree = false;
-                  cout << "Diagonal path up-right is not clear!\n";
+                  printf("Diagonal path up-right is not clear!\n");
                }
             }
          }
@@ -1228,7 +1223,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow+i, startingPos.iColumn-i))
                {
                   bFree = false;
-                  cout << "Diagonal path up-left is not clear!\n";
+                  printf("Diagonal path up-left is not clear!\n");
                }
             }
          }
@@ -1244,7 +1239,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow - i, startingPos.iColumn + i))
                {
                   bFree = false;
-                  cout << "Diagonal path down-right is not clear!\n";
+                  printf("Diagonal path down-right is not clear!\n");
                }
             }
          }
@@ -1260,14 +1255,14 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow - i, startingPos.iColumn - i))
                {
                   bFree = false;
-                  cout << "Diagonal path down-left is not clear!\n";
+                  printf("Diagonal path down-left is not clear!\n");
                }
             }
          }
 
          else
          {
-            throw("Error. Diagonal move not allowed");
+            //throw("Error. Diagonal move not allowed");
          }
       }
       break;
@@ -1290,7 +1285,7 @@ bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirect
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iColumn == finishingPos.iColumn)
          {
-            cout << "Error. Movement is horizontal but column is the same\n";
+            printf("Error. Movement is horizontal but column is the same\n");
          }
 
          // Moving to the right
@@ -1327,8 +1322,8 @@ bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirect
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iRow == finishingPos.iRow)
          {
-            cout << "Error. Movement is vertical but row is the same\n";
-           throw("Error. Movement is vertical but row is the same");
+            printf("Error. Movement is vertical but row is the same\n");
+           //throw("Error. Movement is vertical but row is the same");
          }
 
          // Moving up
@@ -1415,8 +1410,8 @@ bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirect
 
          else
          {
-            cout << "Error. Diagonal move not allowed\n";
-            throw("Error. Diagonal move not allowed");
+            printf("Error. Diagonal move not allowed\n");
+            //throw("Error. Diagonal move not allowed");
          }
       }
       break;
@@ -1540,7 +1535,7 @@ bool Game::isCheckMate()
 
             default:
             {
-               throw("!!!!Should not reach here. Invalid piece");
+               //throw("!!!!Should not reach here. Invalid piece");
             }
             break;
          }
@@ -1661,7 +1656,7 @@ int Game::getOpponentColor(void)
    return iColor;
 }
 
-void Game::parseMove(string move, Position* pFrom, Position* pTo, char* chPromoted)
+void Game::parseMove(std::string move, Position* pFrom, Position* pTo, char* chPromoted)
 {
    pFrom->iColumn = move[0];
    pFrom->iRow    = move[1];
@@ -1719,9 +1714,9 @@ void Game::logMove(std::string &to_record)
    }
 }
 
-string Game::getLastMove(void)
+std::string Game::getLastMove(void)
 {
-   string last_move;
+   std::string last_move;
 
    // Who did the last move?
    if (BLACK_PLAYER == getCurrentTurn())
@@ -1757,4 +1752,3 @@ void Game::deleteLastMove( void )
       rounds.push_back(round);
    }
 }
-*/

@@ -1,11 +1,10 @@
 #pragma once
 //#include "includes.h"
 
+#define EMPTY_SQUARE 0x20
+
 class Chess
 {
-public:
-  void lava();
-  /*
 public:
    static int getPieceColor( char chPiece );
 
@@ -153,19 +152,19 @@ public:
 
    int getOpponentColor( void );
 
-   void parseMove( string move, Position* pFrom, Position* pTo, char* chPromoted = nullptr );
+   void parseMove( std::string move, Position* pFrom, Position* pTo, char* chPromoted = nullptr );
 
    void logMove( std::string &to_record );
 
-   string getLastMove( void );
+   std::string getLastMove( void );
 
    void deleteLastMove( void );
 
    // Save all the moves
    struct Round
    {
-      string white_move;
-      string black_move;
+      std::string white_move;
+      std::string black_move;
    };
 
    //std::deque<std::string> moves;
@@ -203,5 +202,4 @@ private:
 
    // Has the game finished already?
    bool m_bGameFinished;
-   */
 };
