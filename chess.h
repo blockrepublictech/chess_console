@@ -129,6 +129,8 @@ public:
    // round = which round of the game this is. 0 is the first round
    ~Game();
 
+   bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion);
+
    void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion );
 
    bool castlingAllowed( Side iSide, int iColor );
