@@ -218,9 +218,6 @@ private:
    bool m_bCastlingKingSideAllowed[2];
    bool m_bCastlingQueenSideAllowed[2];
 
-   // Holds the current turn
-   int  m_CurrentTurn;
-
    // Has the game finished already?
    bool m_bGameFinished;
 

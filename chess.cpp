@@ -88,9 +88,6 @@ std::string Chess::describePiece(char chPiece)
 // -------------------------------------------------------------------
 Game::Game(IErrorReporter& reporter, const char board[8][8], int round):m_reporter(reporter)
 {
-   // White player always starts
-   m_CurrentTurn = WHITE_PLAYER;
-
    // Game on!
    m_bGameFinished = false;
 
@@ -285,7 +282,7 @@ void Game::undoLastMove()
       char chCaptured;
 
       // Since we already changed turns back, it means we should we pop a piece from the oponents vector
-      if (WHITE_PLAYER == m_CurrentTurn)
+      if (Chess::WHITE_PLAYER == getCurrentTurn())
       {
          chCaptured = black_captured.back();
          black_captured.pop_back();
@@ -1618,14 +1615,7 @@ Chess::Position Game::findKing(int iColor)
 
 void Game::changeTurns(void)
 {
-   if (WHITE_PLAYER == m_CurrentTurn)
-   {
-      m_CurrentTurn = BLACK_PLAYER;
-   }
-   else
-   {
-      m_CurrentTurn = WHITE_PLAYER;
-   }
+  m_round++;
 }
 
 bool Game::isFinished( void )
@@ -1635,7 +1625,11 @@ bool Game::isFinished( void )
 
 int Game::getCurrentTurn(void)
 {
-   return m_CurrentTurn;
+  if ((getCurrentRound() & 1) == 0) {
+    return Chess::WHITE_PLAYER;
+  } else {
+    return Chess::BLACK_PLAYER;
+  }
 }
 
 int Game::getCurrentRound(void)
