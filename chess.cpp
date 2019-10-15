@@ -86,7 +86,7 @@ std::string Chess::describePiece(char chPiece)
 // -------------------------------------------------------------------
 // Game class
 // -------------------------------------------------------------------
-Game::Game(IErrorReporter& reporter):m_reporter(reporter)
+Game::Game(IErrorReporter& reporter, const char board[8][8], int round):m_reporter(reporter)
 {
    // White player always starts
    m_CurrentTurn = WHITE_PLAYER;
@@ -103,7 +103,8 @@ Game::Game(IErrorReporter& reporter):m_reporter(reporter)
    m_undo.castling.bApplied         = false;
 
    // Initial board settings
-   memcpy(board, initial_board, sizeof(char) * 8 * 8);
+   memcpy(this->board, board, sizeof(char) * 8 * 8);
+   m_round = round;
 
    // Castling is allowed (to each side) until the player moves the king or the rook
    m_bCastlingKingSideAllowed[WHITE_PLAYER]  = true;
@@ -111,8 +112,6 @@ Game::Game(IErrorReporter& reporter):m_reporter(reporter)
 
    m_bCastlingQueenSideAllowed[WHITE_PLAYER] = true;
    m_bCastlingQueenSideAllowed[BLACK_PLAYER] = true;
-
-   //m_reporter = reporter;
 }
 
 Game::~Game()
@@ -1637,6 +1636,11 @@ bool Game::isFinished( void )
 int Game::getCurrentTurn(void)
 {
    return m_CurrentTurn;
+}
+
+int Game::getCurrentRound(void)
+{
+  return m_round;
 }
 
 int Game::getOpponentColor(void)

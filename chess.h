@@ -101,6 +101,7 @@ public:
       Attacker attacker[9]; //maximum theorical number of attackers
    };
 
+   /*
    const char initial_board[8][8] =
    {
       // This represents the pieces on the board.
@@ -116,12 +117,16 @@ public:
       { 'p',  'p',  'p',  'p',  'p',  'p',  'p',  'p' },
       { 'r',  'n',  'b',  'q',  'k',  'b',  'n',  'r' },
    };
+   */
 };
 
 class Game : Chess
 {
 public:
-   Game(IErrorReporter& reporter);
+   Game(IErrorReporter& reporter, const char board[8][8], int round);
+   // reporter = an object that handles reporting errors
+   // board = all the pieces
+   // round = which round of the game this is. 0 is the first round
    ~Game();
 
    void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion );
@@ -163,6 +168,8 @@ public:
    bool isFinished( void );
 
    int getCurrentTurn( void );
+
+   int getCurrentRound( void );
 
    int getOpponentColor( void );
 
@@ -218,4 +225,7 @@ private:
    bool m_bGameFinished;
 
    IErrorReporter& m_reporter;
+
+   // Current turn number of the game. 0 = first turn
+   int m_round;
 };
