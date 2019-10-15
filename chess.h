@@ -131,10 +131,6 @@ public:
 
    void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion );
 
-   void undoLastMove();
-
-   bool undoIsPossible();
-
    bool castlingAllowed( Side iSide, int iColor );
 
    char getPieceAtPosition( int iRow, int iColumn );
@@ -175,44 +171,10 @@ public:
 
    void parseMove( std::string move, Position* pFrom, Position* pTo, char* chPromoted = nullptr );
 
-   void logMove( std::string &to_record );
-
-   std::string getLastMove( void );
-
-   void deleteLastMove( void );
-
-   // Save all the moves
-   struct Round
-   {
-      std::string white_move;
-      std::string black_move;
-   };
-
-   //std::deque<std::string> moves;
-   std::deque<Round> rounds;
-
-   // Save the captured pieces
-   std::vector<char> white_captured;
-   std::vector<char> black_captured;
-
 private:
 
    // Represent the pieces in the board
    char board[8][8];
-
-   // Undo is possible?
-   struct Undo
-   {
-      bool bCanUndo;
-      bool bCapturedLastMove;
-
-      bool bCastlingKingSideAllowed;
-      bool bCastlingQueenSideAllowed;
-
-      EnPassant en_passant;
-      Castling  castling;
-      Promotion promotion;
-   } m_undo;
 
    // Castling requirements
    bool m_bCastlingKingSideAllowed[2];

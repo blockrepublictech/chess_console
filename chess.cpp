@@ -91,14 +91,6 @@ Game::Game(IErrorReporter& reporter, const char board[8][8], int round):m_report
    // Game on!
    m_bGameFinished = false;
 
-   // Nothing has happend yet
-   m_undo.bCapturedLastMove         = false;
-   m_undo.bCanUndo                  = false;
-   m_undo.bCastlingKingSideAllowed  = false;
-   m_undo.bCastlingQueenSideAllowed = false;
-   m_undo.en_passant.bApplied       = false;
-   m_undo.castling.bApplied         = false;
-
    // Initial board settings
    memcpy(this->board, board, sizeof(char) * 8 * 8);
    m_round = round;
@@ -113,9 +105,7 @@ Game::Game(IErrorReporter& reporter, const char board[8][8], int round):m_report
 
 Game::~Game()
 {
-   white_captured.clear();
-   black_captured.clear();
-   rounds.clear();
+
 }
 
 void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion)
@@ -129,51 +119,16 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
    // So, was a piece captured in this move?
    if (0x20 != chCapturedPiece)
    {
-      if (WHITE_PIECE == getPieceColor(chCapturedPiece))
-      {
-         // A white piece was captured
-         white_captured.push_back(chCapturedPiece);
-      }
-      else
-      {
-         // A black piece was captured
-         black_captured.push_back(chCapturedPiece);
-      }
-
-      // Set Undo structure. If a piece was captured, then no "en passant" move performed
-      m_undo.bCapturedLastMove = true;
-
-      // Reset m_undo.castling
-      memset( &m_undo.en_passant, 0, sizeof( Chess::EnPassant ));
    }
    else if (true == S_enPassant->bApplied)
    {
       char chCapturedEP = getPieceAtPosition(S_enPassant->PawnCaptured.iRow, S_enPassant->PawnCaptured.iColumn);
 
-      if (WHITE_PIECE == getPieceColor(chCapturedEP))
-      {
-         // A white piece was captured
-         white_captured.push_back(chCapturedEP);
-      }
-      else
-      {
-         // A black piece was captured
-         black_captured.push_back(chCapturedEP);
-      }
-
       // Now, remove the captured pawn
       board[S_enPassant->PawnCaptured.iRow][S_enPassant->PawnCaptured.iColumn] = EMPTY_SQUARE;
-
-      // Set Undo structure as piece was captured and "en passant" move was performed
-      m_undo.bCapturedLastMove = true;
-      memcpy(&m_undo.en_passant, S_enPassant, sizeof(Chess::EnPassant));
    }
    else
    {
-      m_undo.bCapturedLastMove   = false;
-
-      // Reset m_undo.castling
-      memset( &m_undo.en_passant, 0, sizeof( Chess::EnPassant ));
    }
 
    // Remove piece from present position
@@ -183,16 +138,10 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
    if ( true == S_promotion->bApplied )
    {
       board[future.iRow][future.iColumn] = S_promotion->chAfter;
-
-      // Set Undo structure as a promotion occured
-      memcpy(&m_undo.promotion, S_promotion, sizeof(Chess::Promotion));
    }
    else
    {
       board[future.iRow][future.iColumn] = chPiece;
-
-      // Reset m_undo.promotion
-      memset( &m_undo.promotion, 0, sizeof( Chess::Promotion ));
    }
 
    // Was it a castling move?
@@ -206,18 +155,9 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
 
       // 'Jump' into to new position
       board[S_castling->rook_after.iRow][S_castling->rook_after.iColumn] = chPiece;
-
-      // Write this information to the m_undo struct
-      memcpy(&m_undo.castling, S_castling, sizeof(Chess::Castling));
-
-      // Save the 'CastlingAllowed' information in case the move is undone
-      m_undo.bCastlingKingSideAllowed  = m_bCastlingKingSideAllowed[getCurrentTurn()] ;
-      m_undo.bCastlingQueenSideAllowed = m_bCastlingQueenSideAllowed[getCurrentTurn()];
    }
    else
    {
-      // Reset m_undo.castling
-      memset( &m_undo.castling, 0, sizeof( Chess::Castling ));
    }
 
    // Castling requirements
@@ -244,107 +184,6 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
 
    // Change turns
    changeTurns();
-
-   // This move can be undone
-   m_undo.bCanUndo = true;
-}
-
-void Game::undoLastMove()
-{
-   std::string last_move = getLastMove();
-
-   // Parse the line
-   Chess::Position from;
-   Chess::Position to;
-   parseMove(last_move, &from, &to);
-
-   // Since we want to undo a move, we will be moving the piece from (iToRow, iToColumn) to (iFromRow, iFromColumn)
-   char chPiece = getPieceAtPosition(to.iRow, to.iColumn);
-
-   // Moving it back
-   // If there was a castling
-   if ( true == m_undo.promotion.bApplied )
-   {
-      board[from.iRow][from.iColumn] = m_undo.promotion.chBefore;
-   }
-   else
-   {
-      board[from.iRow][from.iColumn] = chPiece;
-   }
-
-   // Change turns
-   changeTurns();
-
-   // If a piece was captured, move it back to the board
-   if (m_undo.bCapturedLastMove)
-   {
-      // Let's retrieve the last captured piece
-      char chCaptured;
-
-      // Since we already changed turns back, it means we should we pop a piece from the oponents vector
-      if (Chess::WHITE_PLAYER == getCurrentTurn())
-      {
-         chCaptured = black_captured.back();
-         black_captured.pop_back();
-      }
-      else
-      {
-         chCaptured = white_captured.back();
-         white_captured.pop_back();
-      }
-
-      // Move the captured piece back. Was this an "en passant" move?
-      if (m_undo.en_passant.bApplied)
-      {
-         // Move the captured piece back
-         board[m_undo.en_passant.PawnCaptured.iRow][m_undo.en_passant.PawnCaptured.iColumn] = chCaptured;
-
-         // Remove the attacker
-         board[to.iRow][to.iColumn] = EMPTY_SQUARE;
-      }
-      else
-      {
-         board[to.iRow][to.iColumn] = chCaptured;
-      }
-   }
-   else
-   {
-      board[to.iRow][to.iColumn] = EMPTY_SQUARE;
-   }
-
-   // If there was a castling
-   if ( m_undo.castling.bApplied )
-   {
-      char chRook = getPieceAtPosition(m_undo.castling.rook_after.iRow, m_undo.castling.rook_after.iColumn);
-
-      // Remove the rook from present position
-      board[m_undo.castling.rook_after.iRow][m_undo.castling.rook_after.iColumn] = EMPTY_SQUARE;
-
-      // 'Jump' into to new position
-      board[m_undo.castling.rook_before.iRow][m_undo.castling.rook_before.iColumn] = chRook;
-
-      // Restore the values of castling allowed or not
-      m_bCastlingKingSideAllowed[getCurrentTurn()]  = m_undo.bCastlingKingSideAllowed;
-      m_bCastlingQueenSideAllowed[getCurrentTurn()] = m_undo.bCastlingQueenSideAllowed;
-   }
-
-   // Clean m_undo struct
-   m_undo.bCanUndo             = false;
-   m_undo.bCapturedLastMove    = false;
-   m_undo.en_passant.bApplied  = false;
-   m_undo.castling.bApplied    = false;
-   m_undo.promotion.bApplied   = false;
-
-   // If it was a checkmate, toggle back to game not finished
-   m_bGameFinished = false;
-
-   // Finally, remove the last move from the list
-   deleteLastMove();
-}
-
-bool Game::undoIsPossible()
-{
-   return m_undo.bCanUndo;
 }
 
 bool Game::castlingAllowed(Side iSide, int iColor)
@@ -1678,74 +1517,5 @@ void Game::parseMove(std::string move, Position* pFrom, Position* pTo, char* chP
       {
          *chPromoted = EMPTY_SQUARE;
       }
-   }
-}
-
-void Game::logMove(std::string &to_record)
-{
-   // If record contains only 5 chracters, add spaces
-   // Because when
-   if ( to_record.length() == 5 )
-   {
-      to_record += "  ";
-   }
-
-   if ( WHITE_PLAYER == getCurrentTurn() )
-   {
-      // If this was a white player move, create a new round and leave the black_move empty
-      Round round;
-      round.white_move = to_record;
-      round.black_move = "";
-
-      rounds.push_back(round);
-   }
-   else
-   {
-      // If this was a black_move, just update the last Round
-      Round round = rounds[rounds.size() - 1];
-      round.black_move = to_record;
-
-      // Remove the last round and put it back, now with the black move
-      rounds.pop_back();
-      rounds.push_back(round);
-   }
-}
-
-std::string Game::getLastMove(void)
-{
-   std::string last_move;
-
-   // Who did the last move?
-   if (BLACK_PLAYER == getCurrentTurn())
-   {
-      // If it's black's turn now, white had the last move
-      last_move = rounds[rounds.size() - 1].white_move;
-   }
-   else
-   {
-      // Last move was black's
-      last_move = rounds[rounds.size() - 1].black_move;
-   }
-
-   return last_move;
-}
-
-void Game::deleteLastMove( void )
-{
-   // Notice we already changed turns back
-   if (WHITE_PLAYER == getCurrentTurn())
-   {
-      // Last move was white's turn, so simply pop from the back
-      rounds.pop_back();
-   }
-   else
-   {
-      // Last move was black's, so let's
-      Round round = rounds[rounds.size() - 1];
-      round.black_move = "";
-
-      // Pop last round and put it back, now without the black move
-      rounds.pop_back();
-      rounds.push_back(round);
    }
 }
