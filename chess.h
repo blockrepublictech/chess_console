@@ -121,7 +121,7 @@ public:
 class Game : Chess
 {
 public:
-   Game(IErrorReporter* reporter);
+   Game(IErrorReporter& reporter);
    ~Game();
 
    void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion );
@@ -217,5 +217,5 @@ private:
    // Has the game finished already?
    bool m_bGameFinished;
 
-   IErrorReporter* m_reporter;
+   IErrorReporter& m_reporter;
 };
