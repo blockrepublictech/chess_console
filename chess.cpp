@@ -86,7 +86,11 @@ std::string Chess::describePiece(char chPiece)
 // -------------------------------------------------------------------
 // Game class
 // -------------------------------------------------------------------
-Game::Game(IErrorReporter& reporter, const char board[8][8], int round):m_reporter(reporter)
+Game::Game(IErrorReporter& reporter, const char board[8][8], int round,
+           Chess::Position LastMoveFrom, Chess::Position LastMoveTo)
+           :m_reporter(reporter),
+           m_LastMoveFrom(LastMoveFrom),
+           m_LastMoveTo(LastMoveTo)
 {
    // Game on!
    m_bGameFinished = false;
@@ -173,17 +177,8 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
          else if ( (Chess::isWhitePiece(chPiece) && 4 == present.iRow && 5 == future.iRow && 1 == abs(future.iColumn - present.iColumn) ) ||
                    (Chess::isBlackPiece(chPiece) && 3 == present.iRow && 2 == future.iRow && 1 == abs(future.iColumn - present.iColumn) ) )
          {
-           /* TODO: Come back to re-eable enPassant
-            // It is only valid if last move of the opponent was a double move forward by a pawn on a adjacent column
-            string last_move = getLastMove();
-
-            // Parse the line
-            Chess::Position LastMoveFrom;
-            Chess::Position LastMoveTo;
-            parseMove(last_move, &LastMoveFrom, &LastMoveTo);
-
             // First of all, was it a pawn?
-            char chLstMvPiece = getPieceAtPosition(LastMoveTo.iRow, LastMoveTo.iColumn);
+            char chLstMvPiece = getPieceAtPosition(m_LastMoveTo.iRow, m_LastMoveTo.iColumn);
 
             if (toupper(chLstMvPiece) != 'P')
             {
@@ -191,16 +186,15 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
             }
 
             // Did the pawn have a double move forward and was it an adjacent column?
-            if ( 2 == abs(LastMoveTo.iRow - LastMoveFrom.iRow) && 1 == abs(LastMoveFrom.iColumn - present.iColumn) )
+            if ( 2 == abs(m_LastMoveTo.iRow - m_LastMoveFrom.iRow) && 1 == abs(m_LastMoveFrom.iColumn - present.iColumn) )
             {
                // En passant move!
                bValid = true;
 
                S_enPassant->bApplied = true;
-               S_enPassant->PawnCaptured.iRow    = LastMoveTo.iRow;
-               S_enPassant->PawnCaptured.iColumn = LastMoveTo.iColumn;
+               S_enPassant->PawnCaptured.iRow    = m_LastMoveTo.iRow;
+               S_enPassant->PawnCaptured.iColumn = m_LastMoveTo.iColumn;
             }
-            */
          }
 
          // Wants to capture a piece

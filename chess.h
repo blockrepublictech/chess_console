@@ -123,10 +123,13 @@ public:
 class Game : Chess
 {
 public:
-   Game(IErrorReporter& reporter, const char board[8][8], int round);
+   Game(IErrorReporter& reporter, const char board[8][8], int round,
+        Chess::Position LastMoveFrom, Chess::Position LastMoveTo);
    // reporter = an object that handles reporting errors
    // board = all the pieces
    // round = which round of the game this is. 0 is the first round
+   // LastMoveFrom = Last move for the other player. The from position
+   // LastMoveTo = Last move for the other player. The to position
    ~Game();
 
    bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion);
@@ -189,4 +192,7 @@ private:
 
    // Current turn number of the game. 0 = first turn
    int m_round;
+
+   Chess::Position m_LastMoveFrom;
+   Chess::Position m_LastMoveTo;
 };
