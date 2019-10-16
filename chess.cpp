@@ -457,7 +457,9 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
    return bValid;
 }
 
-void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion)
+void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPassant,
+                     Chess::Castling* S_castling, Chess::Promotion* S_promotion,
+                     Chess::Capture* S_capture)
 {
    // Get the piece to be moved
    char chPiece = getPieceAtPosition(present);
@@ -468,6 +470,7 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
    // So, was a piece captured in this move?
    if (0x20 != chCapturedPiece)
    {
+     S_capture->bCaptured = true;
    }
    else if (true == S_enPassant->bApplied)
    {
@@ -475,9 +478,12 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
 
       // Now, remove the captured pawn
       board[S_enPassant->PawnCaptured.iRow][S_enPassant->PawnCaptured.iColumn] = EMPTY_SQUARE;
+
+      S_capture->bCaptured = true;
    }
    else
    {
+     S_capture->bCaptured = false;
    }
 
    // Remove piece from present position

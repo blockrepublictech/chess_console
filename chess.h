@@ -101,6 +101,11 @@ public:
       Attacker attacker[9]; //maximum theorical number of attackers
    };
 
+   struct Capture
+   {
+     bool bCaptured;
+   };
+
    /*
    const char initial_board[8][8] =
    {
@@ -140,7 +145,9 @@ public:
 
    bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion);
 
-   void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion );
+   void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant,
+                   Chess::Castling* S_castling, Chess::Promotion* S_promotion,
+                   Chess::Capture* S_capture );
 
    bool castlingAllowed( Side iSide, int iColor );
 
