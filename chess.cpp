@@ -446,12 +446,10 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
    // ----------------------------------------------
    if ( true == wouldKingBeInCheck(chPiece, present, future, S_enPassant) )
    {
-     printf("Found king would be in check\n");
       // Move would put player's king in check
       return false;
    }
 
-   printf("Found king would not be in check\n");
    return bValid;
 }
 
@@ -589,7 +587,6 @@ char Game::getPiece_considerMove(int iRow, int iColumn, IntendedMove* intended_m
 
 Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, IntendedMove* pintended_move)
 {
-  printf("isUnderAttack called\n");
    UnderAttack attack = { 0 };
 
    // a) Direction: HORIZONTAL
@@ -621,6 +618,17 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = HORIZONTAL;
             break;
          }
+         else if ( (i == iColumn + 1) && (toupper(chPieceFound) == 'K') )
+         {
+            // There is king one space to the right, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow = iRow;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = i;
+            attack.attacker[attack.iNumAttackers-1].dir = HORIZONTAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack horizontally, so no problem
@@ -628,7 +636,6 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          }
       }
 
-      printf("isUnderAttack check to right complete\n");
       // Check all the way to the left
       for (int i = iColumn - 1; i >= 0; i--)
       {
@@ -656,13 +663,23 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = HORIZONTAL;
             break;
          }
+         else if ( (i == iColumn - 1) && (toupper(chPieceFound) == 'K') )
+         {
+            // There is a king one space to the right, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = iRow;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = i;
+            attack.attacker[attack.iNumAttackers-1].dir = HORIZONTAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack horizontally, so no problem
             break;
          }
       }
-      printf("isUnderAttack check to left complete\n");
    }
 
    // b) Direction: VERTICAL
@@ -685,7 +702,18 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          else if ( (toupper(chPieceFound) == 'Q') ||
                    (toupper(chPieceFound) == 'R')  )
          {
-            // There is a queen or a rook to the right, so the piece is in jeopardy
+            // There is a queen or a rook above, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = i;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = iColumn;
+            attack.attacker[attack.iNumAttackers-1].dir = VERTICAL;
+            break;
+         }
+         else if ( (i == iRow + 1) && (toupper(chPieceFound) == 'K')  )
+         {
+            // There is a king one space up, so the piece is in jeopardy
             attack.bUnderAttack = true;
             attack.iNumAttackers += 1;
 
@@ -700,7 +728,6 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
-      printf("isUnderAttack check up complete\n");
 
       // Check all the way down
       for (int i = iRow - 1; i >= 0; i--)
@@ -729,13 +756,23 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = VERTICAL;
             break;
          }
+         else if ((i == iRow - 1) && (toupper(chPieceFound) == 'K') )
+         {
+            // There is a king one space to the below, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = i;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = iColumn;
+            attack.attacker[attack.iNumAttackers-1].dir = VERTICAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack vertically, so no problem
             break;
          }
       }
-      printf("isUnderAttack check down complete\n");
 }
 
    // c) Direction: DIAGONAL
@@ -781,13 +818,23 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
             break;
          }
+         else if ( (i == iRow + 1) && (toupper(chPieceFound) == 'K'))
+         {
+            // There is a king in that direction, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = i;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = j;
+            attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack diagonally, so no problem
             break;
          }
       }
-      printf("isUnderAttack check up-right complete\n");
 
       // Check the diagonal up-left
       for (int i = iRow + 1, j = iColumn - 1; i < 8 && j > 0; i++, j--)
@@ -830,6 +877,17 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
             break;
          }
+         else if ( (i == iRow + 1) && (toupper(chPieceFound) == 'K'))
+         {
+            // There is a king in that direction, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = i;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = j;
+            attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack diagonally, so no problem
@@ -837,7 +895,6 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          }
       }
 
-      printf("isUnderAttack check upleft complete\n");
       // Check the diagonal down-right
       for (int i = iRow - 1, j = iColumn + 1; i > 0 && j < 8; i--, j++)
       {
@@ -879,6 +936,17 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
             break;
          }
+         else if ( (i == iRow - 1) && (toupper(chPieceFound) == 'K') )
+         {
+            // There is a qking in that direction, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = i;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = j;
+            attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack diagonally, so no problem
@@ -886,7 +954,6 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          }
       }
 
-      printf("isUnderAttack check down right complete\n");
       // Check the diagonal down-left
       for (int i = iRow - 1, j = iColumn - 1; i > 0 && j > 0; i--, j--)
       {
@@ -928,13 +995,23 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
             break;
          }
+         else if ( (i == iRow - 1) && (toupper(chPieceFound) == 'K') )
+         {
+            // There is a king in that direction, so the piece is in jeopardy
+            attack.bUnderAttack = true;
+            attack.iNumAttackers += 1;
+
+            attack.attacker[attack.iNumAttackers-1].pos.iRow    = i;
+            attack.attacker[attack.iNumAttackers-1].pos.iColumn = j;
+            attack.attacker[attack.iNumAttackers-1].dir = DIAGONAL;
+            break;
+         }
          else
          {
             // There is a piece that does not attack diagonally, so no problem
             break;
          }
       }
-      printf("isUnderAttack check dnow left complete\n");
    }
 
    // d) Direction: L_SHAPED
@@ -976,7 +1053,6 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
-      printf("isUnderAttack check for kinghts complete\n");
    }
 
    return attack;
@@ -1307,7 +1383,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iColumn == finishingPos.iColumn)
          {
-            printf("Error. Movement is horizontal but column is the same\n");
+            //printf("Error. Movement is horizontal but column is the same\n");
          }
 
          // Moving to the right
@@ -1321,7 +1397,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow, i))
                {
                   bFree = false;
-                  printf("Horizontal path to the right is not clear!\n");
+                  //printf("Horizontal path to the right is not clear!\n");
                }
             }
          }
@@ -1337,7 +1413,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow, i))
                {
                   bFree = false;
-                  printf("Horizontal path to the left is not clear!\n");
+                  //printf("Horizontal path to the left is not clear!\n");
                }
             }
          }
@@ -1364,7 +1440,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if ( isSquareOccupied(i, startingPos.iColumn) )
                {
                   bFree = false;
-                  printf("Vertical path up is not clear!\n");
+                  //printf("Vertical path up is not clear!\n");
                }
             }
          }
@@ -1380,7 +1456,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if ( isSquareOccupied(i, startingPos.iColumn) )
                {
                   bFree = false;
-                  printf("Vertical path down is not clear!\n");
+                  //printf("Vertical path down is not clear!\n");
                }
             }
          }
@@ -1400,7 +1476,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow + i, startingPos.iColumn + i))
                {
                   bFree = false;
-                  printf("Diagonal path up-right is not clear!\n");
+                  //printf("Diagonal path up-right is not clear!\n");
                }
             }
          }
@@ -1416,7 +1492,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow+i, startingPos.iColumn-i))
                {
                   bFree = false;
-                  printf("Diagonal path up-left is not clear!\n");
+                  //printf("Diagonal path up-left is not clear!\n");
                }
             }
          }
@@ -1432,7 +1508,7 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow - i, startingPos.iColumn + i))
                {
                   bFree = false;
-                  printf("Diagonal path down-right is not clear!\n");
+                  //printf("Diagonal path down-right is not clear!\n");
                }
             }
          }
@@ -1448,14 +1524,14 @@ bool Game::isPathFree(Position startingPos, Position finishingPos, int iDirectio
                if (isSquareOccupied(startingPos.iRow - i, startingPos.iColumn - i))
                {
                   bFree = false;
-                  printf("Diagonal path down-left is not clear!\n");
+                  //printf("Diagonal path down-left is not clear!\n");
                }
             }
          }
 
          else
          {
-            m_reporter.ReportError("Error. Diagonal move not allowed");
+            //m_reporter.ReportError("Error. Diagonal move not allowed");
          }
       }
       break;
@@ -1478,7 +1554,7 @@ bool Game::canBeBlocked(Position startingPos, Position finishingPos, int iDirect
          // If the piece wants to move from column 0 to column 7, we must check if columns 1-6 are free
          if (startingPos.iColumn == finishingPos.iColumn)
          {
-            printf("Error. Movement is horizontal but column is the same\n");
+            //printf("Error. Movement is horizontal but column is the same\n");
          }
 
          // Moving to the right
@@ -1752,13 +1828,11 @@ bool Game::isOurPiece(char chPiece)
 
 bool Game::isStaleMate()
 {
-  printf("isStaleMate called\n");
    if ( true == playerKingInCheck() )
    // If the king is in check we aren't in stalemate
    {
       return false;
    }
-   printf("isStaleMate king not in check\n");
    int iPieceRow, iPieceCol, i;
    // White pawns move down black ones move up
    int iPawnDirection = (getCurrentTurn() == Chess::WHITE_PLAYER ? +1 : -1);
@@ -1774,11 +1848,9 @@ bool Game::isStaleMate()
        char chPiece = getPieceAtPosition(iPieceRow, iPieceCol);
        if ( EMPTY_SQUARE !=  chPiece)
        {
-         printf("Piece found at row=%i, column=%i\n", iPieceRow, iPieceCol);
           if (isOurPiece(chPiece))
           // We can only move our own pieces
           {
-            printf("Piece is ours found %c\n", chPiece);
             Chess::Position currentpos {iPieceRow, iPieceCol};
             switch(toupper(chPiece)){
               // Get a general list of all
@@ -1832,8 +1904,9 @@ bool Game::isStaleMate()
               enpassant.bApplied = false;
               castling.bApplied = false;
               promotion.bApplied = false;
-              printf("Testing move to row=%i, col=%i\n", targetpos.iRow, targetpos.iColumn);
-              if (isMoveValid(currentpos, targetpos, &enpassant, &castling,
+              if (targetpos.iRow >= 0 && targetpos.iRow < 8 &&
+                  targetpos.iColumn >= 0 && targetpos.iColumn < 8 &&
+                  isMoveValid(currentpos, targetpos, &enpassant, &castling,
                   &promotion)) {
                     // If there are any valid moves we are not in stalemate
                     return false;
