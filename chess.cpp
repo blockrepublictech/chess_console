@@ -87,7 +87,11 @@ std::string Chess::describePiece(char chPiece)
 // Game class
 // -------------------------------------------------------------------
 Game::Game(IErrorReporter& reporter, const char board[8][8], int round,
-           Chess::Position LastMoveFrom, Chess::Position LastMoveTo)
+           Chess::Position LastMoveFrom, Chess::Position LastMoveTo,
+           bool bCastlingKingSideWhiteAllowed,
+           bool bCastlingKingSideBlackAllowed,
+           bool bCastlingQueenSideWhiteAllowed,
+           bool bCastlingQueenSideBlackAllowed)
            :m_reporter(reporter),
            m_LastMoveFrom(LastMoveFrom),
            m_LastMoveTo(LastMoveTo)
@@ -100,11 +104,11 @@ Game::Game(IErrorReporter& reporter, const char board[8][8], int round,
    m_round = round;
 
    // Castling is allowed (to each side) until the player moves the king or the rook
-   m_bCastlingKingSideAllowed[WHITE_PLAYER]  = true;
-   m_bCastlingKingSideAllowed[BLACK_PLAYER]  = true;
+   m_bCastlingKingSideAllowed[WHITE_PLAYER]  = bCastlingKingSideWhiteAllowed;
+   m_bCastlingKingSideAllowed[BLACK_PLAYER]  = bCastlingKingSideBlackAllowed;
 
-   m_bCastlingQueenSideAllowed[WHITE_PLAYER] = true;
-   m_bCastlingQueenSideAllowed[BLACK_PLAYER] = true;
+   m_bCastlingQueenSideAllowed[WHITE_PLAYER] = bCastlingQueenSideWhiteAllowed;
+   m_bCastlingQueenSideAllowed[BLACK_PLAYER] = bCastlingQueenSideBlackAllowed;
 }
 
 Game::~Game()

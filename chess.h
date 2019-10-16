@@ -124,12 +124,18 @@ class Game : Chess
 {
 public:
    Game(IErrorReporter& reporter, const char board[8][8], int round,
-        Chess::Position LastMoveFrom, Chess::Position LastMoveTo);
+        Chess::Position LastMoveFrom, Chess::Position LastMoveTo,
+        bool bCastlingKingSideWhiteAllowed,
+        bool bCastlingKingSideBlackAllowed,
+        bool bCastlingQueenSideWhiteAllowed,
+        bool bCastlingQueenSideBlackAllowed);
    // reporter = an object that handles reporting errors
    // board = all the pieces
    // round = which round of the game this is. 0 is the first round
    // LastMoveFrom = Last move for the other player. The from position
    // LastMoveTo = Last move for the other player. The to position
+   // Castling parameters - castling is only allowed if the rook and king have
+   // never moved. So these must be stored and passed in for every move
    ~Game();
 
    bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion);
