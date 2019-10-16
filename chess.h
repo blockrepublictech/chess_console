@@ -156,6 +156,10 @@ public:
 
    bool isCheckMate();
 
+   bool isStaleMate();
+
+   bool isOurPiece(char chPiece);
+
    bool isKingInCheck( int iColor, IntendedMove* intended_move = nullptr );
 
    bool playerKingInCheck( IntendedMove* intended_move = nullptr );

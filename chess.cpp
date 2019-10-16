@@ -446,10 +446,12 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
    // ----------------------------------------------
    if ( true == wouldKingBeInCheck(chPiece, present, future, S_enPassant) )
    {
+     printf("Found king would be in check\n");
       // Move would put player's king in check
       return false;
    }
 
+   printf("Found king would not be in check\n");
    return bValid;
 }
 
@@ -587,6 +589,7 @@ char Game::getPiece_considerMove(int iRow, int iColumn, IntendedMove* intended_m
 
 Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, IntendedMove* pintended_move)
 {
+  printf("isUnderAttack called\n");
    UnderAttack attack = { 0 };
 
    // a) Direction: HORIZONTAL
@@ -625,6 +628,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          }
       }
 
+      printf("isUnderAttack check to right complete\n");
       // Check all the way to the left
       for (int i = iColumn - 1; i >= 0; i--)
       {
@@ -658,6 +662,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
+      printf("isUnderAttack check to left complete\n");
    }
 
    // b) Direction: VERTICAL
@@ -695,6 +700,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
+      printf("isUnderAttack check up complete\n");
 
       // Check all the way down
       for (int i = iRow - 1; i >= 0; i--)
@@ -729,7 +735,8 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
-   }
+      printf("isUnderAttack check down complete\n");
+}
 
    // c) Direction: DIAGONAL
    {
@@ -780,6 +787,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
+      printf("isUnderAttack check up-right complete\n");
 
       // Check the diagonal up-left
       for (int i = iRow + 1, j = iColumn - 1; i < 8 && j > 0; i++, j--)
@@ -829,6 +837,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          }
       }
 
+      printf("isUnderAttack check upleft complete\n");
       // Check the diagonal down-right
       for (int i = iRow - 1, j = iColumn + 1; i > 0 && j < 8; i--, j++)
       {
@@ -877,6 +886,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
          }
       }
 
+      printf("isUnderAttack check down right complete\n");
       // Check the diagonal down-left
       for (int i = iRow - 1, j = iColumn - 1; i > 0 && j > 0; i--, j--)
       {
@@ -924,6 +934,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
+      printf("isUnderAttack check dnow left complete\n");
    }
 
    // d) Direction: L_SHAPED
@@ -965,6 +976,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
+      printf("isUnderAttack check for kinghts complete\n");
    }
 
    return attack;
@@ -1730,6 +1742,109 @@ bool Game::isCheckMate()
    m_bGameFinished = bCheckmate;
 
    return bCheckmate;
+}
+
+bool Game::isOurPiece(char chPiece)
+{
+  return (getCurrentTurn() == Chess::WHITE_PLAYER) !=
+         (islower(chPiece));
+}
+
+bool Game::isStaleMate()
+{
+  printf("isStaleMate called\n");
+   if ( true == playerKingInCheck() )
+   // If the king is in check we aren't in stalemate
+   {
+      return false;
+   }
+   printf("isStaleMate king not in check\n");
+   int iPieceRow, iPieceCol, i;
+   // White pawns move down black ones move up
+   int iPawnDirection = (getCurrentTurn() == Chess::WHITE_PLAYER ? +1 : -1);
+   vector<Chess::Position> moves;
+   Chess::EnPassant enpassant;
+   Chess::Castling castling;
+   Chess::Promotion promotion;
+
+   for (iPieceRow = 0; iPieceRow < 8; iPieceRow++)
+   {
+     for (iPieceCol = 0; iPieceCol < 8; iPieceCol++)
+     {
+       char chPiece = getPieceAtPosition(iPieceRow, iPieceCol);
+       if ( EMPTY_SQUARE !=  chPiece)
+       {
+         printf("Piece found at row=%i, column=%i\n", iPieceRow, iPieceCol);
+          if (isOurPiece(chPiece))
+          // We can only move our own pieces
+          {
+            printf("Piece is ours found %c\n", chPiece);
+            Chess::Position currentpos {iPieceRow, iPieceCol};
+            switch(toupper(chPiece)){
+              // Get a general list of all
+              case 'P': // Pawn
+                moves.push_back((Chess::Position){iPieceRow + iPawnDirection, iPieceCol - 1});
+                moves.push_back((Chess::Position){iPieceRow + iPawnDirection, iPieceCol});
+                moves.push_back((Chess::Position){iPieceRow + iPawnDirection, iPieceCol + 1});
+              break;
+              case 'R': // Rook
+                for (i = 0; i < 8; i++) {
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol});
+                  moves.push_back((Chess::Position){iPieceRow, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow, iPieceCol - i});
+                }
+              break;
+              case 'B': // Bishop
+                for (i = 0; i < 8; i++) {
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol - i});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol - i});
+                }
+              break;
+              case 'Q': // Queen
+                for (i = 0; i < 8; i++) {
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol});
+                  moves.push_back((Chess::Position){iPieceRow, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow, iPieceCol - i});
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol - i});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol - i});
+                }
+              break;
+              case 'K': // King
+                for (i = 0; i < 2; i++) {
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol});
+                  moves.push_back((Chess::Position){iPieceRow, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow, iPieceCol - i});
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol - i});
+                  moves.push_back((Chess::Position){iPieceRow - i, iPieceCol + i});
+                  moves.push_back((Chess::Position){iPieceRow + i, iPieceCol - i});
+                }
+              break;
+            }
+            for(const auto& targetpos : moves) {
+              enpassant.bApplied = false;
+              castling.bApplied = false;
+              promotion.bApplied = false;
+              printf("Testing move to row=%i, col=%i\n", targetpos.iRow, targetpos.iColumn);
+              if (isMoveValid(currentpos, targetpos, &enpassant, &castling,
+                  &promotion)) {
+                    // If there are any valid moves we are not in stalemate
+                    return false;
+                  }
+            }
+          }
+       }
+     }
+
+   }
+   return true;
 }
 
 bool Game::isKingInCheck(int iColor, IntendedMove* pintended_move)
