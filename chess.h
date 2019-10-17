@@ -106,6 +106,11 @@ public:
      bool bCaptured;
    };
 
+   struct PawnDoubleMove
+   {
+     bool bWasDoubleMove;
+   };
+
    /*
    const char initial_board[8][8] =
    {
@@ -143,11 +148,14 @@ public:
    // never moved. So these must be stored and passed in for every move
    ~Game();
 
-   bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion);
+   bool isMoveValid(Chess::Position present, Chess::Position future,
+                    Chess::EnPassant* S_enPassant, Chess::Castling* S_castling,
+                    Chess::Promotion* S_promotion,
+                    Chess::PawnDoubleMove* pawndoublemove);
 
    void movePiece( Position present, Position future, Chess::EnPassant* S_enPassant,
                    Chess::Castling* S_castling, Chess::Promotion* S_promotion,
-                   Chess::Capture* S_capture );
+                   Chess::Capture* S_capture);
 
    bool castlingAllowed( Side iSide, int iColor );
 

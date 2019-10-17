@@ -120,9 +120,14 @@ Game::~Game()
 // Helper
 // Auxiliar functions to determine if a move is valid, etc
 //---------------------------------------------------------------------------------------
-bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassant* S_enPassant, Chess::Castling* S_castling, Chess::Promotion* S_promotion)
+bool Game::isMoveValid(Chess::Position present, Chess::Position future,
+                       Chess::EnPassant* S_enPassant, Chess::Castling* S_castling,
+                       Chess::Promotion* S_promotion,
+                       Chess::PawnDoubleMove* pawndoublemove)
 {
    bool bValid = false;
+   pawndoublemove->bWasDoubleMove = false;
+
 
    char chPiece = getPieceAtPosition(present.iRow, present.iColumn);
 
@@ -158,6 +163,7 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
                                 1   == present.iRow )
                   {
                      bValid = true;
+                     pawndoublemove->bWasDoubleMove = true;
                   }
                }
                else // if ( isBlackPiece(chPiece) )
@@ -167,6 +173,7 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future, Chess::E
                                 6   == present.iRow)
                   {
                      bValid = true;
+                     pawndoublemove->bWasDoubleMove = true;
                   }
                }
             }
@@ -1850,6 +1857,7 @@ bool Game::isStaleMate()
    Chess::EnPassant enpassant;
    Chess::Castling castling;
    Chess::Promotion promotion;
+   Chess::PawnDoubleMove pawndoublemove;
 
    for (iPieceRow = 0; iPieceRow < 8; iPieceRow++)
    {
@@ -1868,6 +1876,7 @@ bool Game::isStaleMate()
                 moves.push_back((Chess::Position){iPieceRow + iPawnDirection, iPieceCol - 1});
                 moves.push_back((Chess::Position){iPieceRow + iPawnDirection, iPieceCol});
                 moves.push_back((Chess::Position){iPieceRow + iPawnDirection, iPieceCol + 1});
+                moves.push_back((Chess::Position){iPieceRow + 2 * iPawnDirection, iPieceCol});
               break;
               case 'R': // Rook
                 for (i = 0; i < 8; i++) {
@@ -1917,7 +1926,7 @@ bool Game::isStaleMate()
               if (targetpos.iRow >= 0 && targetpos.iRow < 8 &&
                   targetpos.iColumn >= 0 && targetpos.iColumn < 8 &&
                   isMoveValid(currentpos, targetpos, &enpassant, &castling,
-                  &promotion)) {
+                  &promotion, &pawndoublemove)) {
                     // If there are any valid moves we are not in stalemate
                     return false;
                   }
