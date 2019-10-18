@@ -86,7 +86,7 @@ std::string Chess::describePiece(char chPiece)
 // -------------------------------------------------------------------
 // Game class
 // -------------------------------------------------------------------
-Game::Game(IErrorReporter& reporter, const char board[8][8], int round,
+Game::Game(IErrorReporter& reporter, const ChessBoard board, int round,
            Chess::Position LastMoveFrom, Chess::Position LastMoveTo,
            bool bCastlingKingSideWhiteAllowed,
            bool bCastlingKingSideBlackAllowed,
@@ -100,7 +100,7 @@ Game::Game(IErrorReporter& reporter, const char board[8][8], int round,
    m_bGameFinished = false;
 
    // Initial board settings
-   memcpy(this->board, board, sizeof(char) * 8 * 8);
+   memcpy(this->board.piece, board.piece, sizeof(char) * 8 * 8);
    m_round = round;
 
    // Castling is allowed (to each side) until the player moves the king or the rook
@@ -484,7 +484,7 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
       char chCapturedEP = getPieceAtPosition(S_enPassant->PawnCaptured.iRow, S_enPassant->PawnCaptured.iColumn);
 
       // Now, remove the captured pawn
-      board[S_enPassant->PawnCaptured.iRow][S_enPassant->PawnCaptured.iColumn] = EMPTY_SQUARE;
+      board.piece[S_enPassant->PawnCaptured.iRow][S_enPassant->PawnCaptured.iColumn] = EMPTY_SQUARE;
 
       S_capture->bCaptured = true;
    }
@@ -494,16 +494,16 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
    }
 
    // Remove piece from present position
-   board[present.iRow][present.iColumn] = EMPTY_SQUARE;
+   board.piece[present.iRow][present.iColumn] = EMPTY_SQUARE;
 
    // Move piece to new position
    if ( true == S_promotion->bApplied )
    {
-      board[future.iRow][future.iColumn] = S_promotion->chAfter;
+      board.piece[future.iRow][future.iColumn] = S_promotion->chAfter;
    }
    else
    {
-      board[future.iRow][future.iColumn] = chPiece;
+      board.piece[future.iRow][future.iColumn] = chPiece;
    }
 
    // Was it a castling move?
@@ -513,10 +513,10 @@ void Game::movePiece(Position present, Position future, Chess::EnPassant* S_enPa
       char chPiece = getPieceAtPosition(S_castling->rook_before.iRow, S_castling->rook_before.iColumn);
 
       // Remove the rook from present position
-      board[S_castling->rook_before.iRow][S_castling->rook_before.iColumn] = EMPTY_SQUARE;
+      board.piece[S_castling->rook_before.iRow][S_castling->rook_before.iColumn] = EMPTY_SQUARE;
 
       // 'Jump' into to new position
-      board[S_castling->rook_after.iRow][S_castling->rook_after.iColumn] = chPiece;
+      board.piece[S_castling->rook_after.iRow][S_castling->rook_after.iColumn] = chPiece;
    }
    else
    {
@@ -562,12 +562,12 @@ bool Game::castlingAllowed(Side iSide, int iColor)
 
 char Game::getPieceAtPosition(int iRow, int iColumn)
 {
-   return board[iRow][iColumn];
+   return board.piece[iRow][iColumn];
 }
 
 char Game::getPieceAtPosition(Position pos)
 {
-   return board[pos.iRow][pos.iColumn];
+   return board.piece[pos.iRow][pos.iColumn];
 }
 
 char Game::getPiece_considerMove(int iRow, int iColumn, IntendedMove* intended_move)

@@ -130,10 +130,12 @@ public:
    */
 };
 
+typedef struct ChessBoard { char piece[8][8]; } ChessBoard;
+
 class Game : Chess
 {
 public:
-   Game(IErrorReporter& reporter, const char board[8][8], int round,
+   Game(IErrorReporter& reporter, const ChessBoard board, int round,
         Chess::Position LastMoveFrom, Chess::Position LastMoveTo,
         bool bCastlingKingSideWhiteAllowed,
         bool bCastlingKingSideBlackAllowed,
@@ -204,7 +206,7 @@ public:
 private:
 
    // Represent the pieces in the board
-   char board[8][8];
+   ChessBoard board;
 
    // Castling requirements
    bool m_bCastlingKingSideAllowed[2];
