@@ -203,6 +203,10 @@ public:
 
    void parseMove( std::string move, Position* pFrom, Position* pTo, char* chPromoted = nullptr );
 
+   const ChessBoard& GetBoard() {
+     return board;
+   };
+
 private:
 
    // Represent the pieces in the board
