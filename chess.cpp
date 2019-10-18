@@ -425,7 +425,7 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future,
       default:
       {
         char chBuff[255];
-        snprintf(chBuff, 256, "!!!!Should not reach here. Invalid piece: %c\n\n\n", char(chPiece));
+        snprintf(chBuff, 256, "!!!!Should not reach here. Invalid  in in isMoveValid piece=%i row=%i col=%i", chPiece, present.iRow, present.iColumn);
          m_reporter.ReportError(chBuff);
       }
       break;
@@ -1819,7 +1819,7 @@ bool Game::isCheckMate()
 
             default:
             {
-               m_reporter.ReportError("!!!!Should not reach here. Invalid piece");
+               m_reporter.ReportError("!!!!Should not reach here. Invalid piece. In ischeckmate");
             }
             break;
          }
