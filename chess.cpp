@@ -185,8 +185,11 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future,
          }
 
          // The "en passant" move
-         else if ( (Chess::isWhitePiece(chPiece) && 4 == present.iRow && 5 == future.iRow && 1 == abs(future.iColumn - present.iColumn) ) ||
-                   (Chess::isBlackPiece(chPiece) && 3 == present.iRow && 2 == future.iRow && 1 == abs(future.iColumn - present.iColumn) ) )
+         else if ( ( (Chess::isWhitePiece(chPiece) && 4 == present.iRow && 5 == future.iRow && 1 == abs(future.iColumn - present.iColumn) ) ||
+                   (Chess::isBlackPiece(chPiece) && 3 == present.iRow && 2 == future.iRow && 1 == abs(future.iColumn - present.iColumn) ) ) &&
+                   // Did the pawn have a double move forward and was it an adjacent column?
+                   ( 2 == abs(m_LastMoveTo.iRow - m_LastMoveFrom.iRow) && 1 == abs(m_LastMoveFrom.iColumn - present.iColumn) )
+                 )
          {
             // First of all, was it a pawn?
             char chLstMvPiece = getPieceAtPosition(m_LastMoveTo.iRow, m_LastMoveTo.iColumn);
@@ -196,16 +199,12 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future,
                return false;
             }
 
-            // Did the pawn have a double move forward and was it an adjacent column?
-            if ( 2 == abs(m_LastMoveTo.iRow - m_LastMoveFrom.iRow) && 1 == abs(m_LastMoveFrom.iColumn - present.iColumn) )
-            {
-               // En passant move!
-               bValid = true;
+             // En passant move!
+             bValid = true;
 
-               S_enPassant->bApplied = true;
-               S_enPassant->PawnCaptured.iRow    = m_LastMoveTo.iRow;
-               S_enPassant->PawnCaptured.iColumn = m_LastMoveTo.iColumn;
-            }
+             S_enPassant->bApplied = true;
+             S_enPassant->PawnCaptured.iRow    = m_LastMoveTo.iRow;
+             S_enPassant->PawnCaptured.iColumn = m_LastMoveTo.iColumn;
          }
 
          // Wants to capture a piece
