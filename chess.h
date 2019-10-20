@@ -76,8 +76,6 @@ public:
    struct Promotion
    {
       bool bApplied;
-      //Position  pos;
-      char chBefore;
       char chAfter;
    };
 
