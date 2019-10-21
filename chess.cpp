@@ -789,7 +789,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
             break;
          }
       }
-}
+   }
 
    // c) Direction: DIAGONAL
    {
@@ -853,7 +853,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
       }
 
       // Check the diagonal up-left
-      for (int i = iRow + 1, j = iColumn - 1; i < 8 && j > 0; i++, j--)
+      for (int i = iRow + 1, j = iColumn - 1; i < 8 && j >= 0; i++, j--)
       {
          char chPieceFound = getPiece_considerMove(i, j, pintended_move);
          if (EMPTY_SQUARE == chPieceFound)
@@ -912,7 +912,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
       }
 
       // Check the diagonal down-right
-      for (int i = iRow - 1, j = iColumn + 1; i > 0 && j < 8; i--, j++)
+      for (int i = iRow - 1, j = iColumn + 1; i >= 0 && j < 8; i--, j++)
       {
          char chPieceFound = getPiece_considerMove(i, j, pintended_move);
          if (EMPTY_SQUARE == chPieceFound)
@@ -971,7 +971,7 @@ Chess::UnderAttack Game::isUnderAttack(int iRow, int iColumn, int iColor, Intend
       }
 
       // Check the diagonal down-left
-      for (int i = iRow - 1, j = iColumn - 1; i > 0 && j > 0; i--, j--)
+      for (int i = iRow - 1, j = iColumn - 1; i >= 0 && j >= 0; i--, j--)
       {
          char chPieceFound = getPiece_considerMove(i, j, pintended_move);
          if (EMPTY_SQUARE == chPieceFound)
