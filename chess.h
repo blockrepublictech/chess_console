@@ -205,6 +205,13 @@ public:
      return board;
    };
 
+   const Chess::Position& GetLastMoveFrom() {
+     return m_LastMoveFrom;
+   }
+   const Chess::Position& GetLastMoveTo() {
+     return m_LastMoveTo;
+   }
+
 private:
 
    // Represent the pieces in the board
