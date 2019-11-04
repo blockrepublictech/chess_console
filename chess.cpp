@@ -424,7 +424,7 @@ bool Game::isMoveValid(Chess::Position present, Chess::Position future,
       default:
       {
         char chBuff[255];
-        snprintf(chBuff, 256, "!!!!Should not reach here. Invalid  in in isMoveValid piece=%i row=%i col=%i", chPiece, present.iRow, present.iColumn);
+        snprintf(chBuff, 255, "!!!!Should not reach here. Invalid  in in isMoveValid piece=%i row=%i col=%i", chPiece, present.iRow, present.iColumn);
          m_reporter.ReportError(chBuff);
       }
       break;
@@ -1868,7 +1868,7 @@ bool Game::isStaleMate()
           if (isOurPiece(chPiece))
           // We can only move our own pieces
           {
-            Chess::Position currentpos; 
+            Chess::Position currentpos;
             currentpos.iRow = iPieceRow;
             currentpos.iColumn = iPieceCol;
             switch(toupper(chPiece)){
