@@ -1868,7 +1868,9 @@ bool Game::isStaleMate()
           if (isOurPiece(chPiece))
           // We can only move our own pieces
           {
-            Chess::Position currentpos {iPieceRow, iPieceCol};
+            Chess::Position currentpos; 
+            currentpos.iRow = iPieceRow;
+            currentpos.iColumn = iPieceCol;
             switch(toupper(chPiece)){
               // Get a general list of all
               case 'P': // Pawn
